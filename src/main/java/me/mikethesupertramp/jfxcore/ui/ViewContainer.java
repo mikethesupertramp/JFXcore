@@ -1,9 +1,7 @@
 package me.mikethesupertramp.jfxcore.ui;
 
-import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import me.mikethesupertramp.jfxcore.di.Injector;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,7 +57,7 @@ public abstract class ViewContainer<T> {
     private String getFileName(String extension) {
         String name = getClass().getSimpleName().toLowerCase();
         if(name.endsWith(NAME_ENDING)) {
-            name = name.substring(0, name.indexOf(NAME_ENDING));
+            name = name.substring(0, name.lastIndexOf(NAME_ENDING));
         }
         return name.concat(extension);
     }
