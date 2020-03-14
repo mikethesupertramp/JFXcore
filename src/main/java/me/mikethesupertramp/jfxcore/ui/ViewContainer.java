@@ -16,7 +16,7 @@ public abstract class ViewContainer<T> {
     private static final String FXML_EXTENSION = ".fxml";
     private static final String CSS_EXTENSION = ".css";
     private static final String NAME_ENDING = "view";
-    protected T presenter;
+    private T presenter;
     private Parent view;
 
     public ViewContainer() {
