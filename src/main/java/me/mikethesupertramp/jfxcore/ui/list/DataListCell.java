@@ -1,7 +1,6 @@
 package me.mikethesupertramp.jfxcore.ui.list;
 
 import javafx.scene.control.ListCell;
-import me.mikethesupertramp.jfxcore.ui.data.DataPresenter;
 import me.mikethesupertramp.jfxcore.ui.data.DataViewContainer;
 
 /**
@@ -9,9 +8,9 @@ import me.mikethesupertramp.jfxcore.ui.data.DataViewContainer;
  * @param <T> Type of data object
  */
 public class DataListCell<T> extends ListCell<T> {
-    private DataViewContainer<DataPresenter<T>> viewContainer;
+    private DataViewContainer<T> viewContainer;
 
-    public DataListCell(DataViewContainer<DataPresenter<T>> viewContainer) {
+    public DataListCell(DataViewContainer<T> viewContainer) {
         this.viewContainer = viewContainer;
     }
 
