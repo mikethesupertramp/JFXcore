@@ -59,8 +59,6 @@ public class UserInterface implements Service {
         stage.setOnShowing(e -> viewContainer.getPresenter().onShow());
         stage.setOnHiding(e -> viewContainer.getPresenter().onHide());
 
-        Injector.performInjection(viewContainer.getPresenter());
-
         viewContainer.getPresenter().onStageCreated(stage);
     }
 

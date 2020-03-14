@@ -2,6 +2,7 @@ package me.mikethesupertramp.jfxcore.ui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import me.mikethesupertramp.jfxcore.di.Injector;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +47,8 @@ public abstract class ViewContainer<T> {
         }
         view = loader.getRoot();
         presenter = loader.getController();
+
+        Injector.performInjection(presenter);
 
         URL cssResource = getClass().getResource(getFileName(CSS_EXTENSION));
         if(cssResource != null) {
