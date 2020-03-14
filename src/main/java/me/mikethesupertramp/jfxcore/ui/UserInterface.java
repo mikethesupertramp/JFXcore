@@ -1,5 +1,6 @@
 package me.mikethesupertramp.jfxcore.ui;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import me.mikethesupertramp.jfxcore.di.Injector;
@@ -30,14 +31,14 @@ public class UserInterface implements Service {
 
     @Override
     public void postInit(ServiceManager serviceManager) {
-        viewsToInit.forEach(clazz -> {
+        Platform.runLater(() -> viewsToInit.forEach(clazz -> {
             try {
                 RootViewContainer viewInstance = clazz.newInstance();
                 createStage(viewInstance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
-        });
+        }));
     }
 
     /**
