@@ -15,6 +15,17 @@ public class ServiceManager {
     private final Queue<Service> uninitializedServices = new LinkedList<>();
     private final List<Service> initializedServices = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
+    public ServiceManager() {
+        Injector.addInjectSource(clazz -> {
+            if (Service.class.isAssignableFrom(clazz)) {
+                return getService((Class<Service>) clazz);
+            } else {
+                return null;
+            }
+        });
+    }
+
     /**
      * Adds service to the manager
      *
@@ -77,4 +88,5 @@ public class ServiceManager {
     public void shutDown() {
         initializedServices.forEach(s -> s.shutdown(this));
     }
+
 }

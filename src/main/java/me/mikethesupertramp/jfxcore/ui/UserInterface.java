@@ -112,21 +112,22 @@ public class UserInterface implements Service {
         }
     }
 
-    //TODO Rework
-    @SuppressWarnings("unchecked")
-    private Object instanceSupplier(Class key) {
-        if(stages.containsKey(key)) {
+
+    @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
+    private Object instanceSupplier(Class<?> key) {
+        if (stages.containsValue(key)) {
             return stages.get(key);
-        } else if(Service.class.isAssignableFrom(key)){
-            return serviceManager.getService(key);
         } else {
-            try {
-                return key.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+            for (StageContainer stage : stages.values()) {
+                ViewContainer view = stage.getContent();
+                if (key.isInstance(view)) {
+                    return view;
+                } else if (key.isInstance(view.getPresenter())) {
+                    return view.getPresenter();
+                }
             }
-            return null;
         }
+        return null;
     }
 
     @Override
