@@ -1,15 +1,23 @@
 package me.mikethesupertramp.jfxcore.ui.root;
 
 import javafx.stage.Stage;
-import me.mikethesupertramp.jfxcore.ui.fragment.FragmentPresenter;
+import javafx.stage.WindowEvent;
 
 /**
- * Advanced version of {@link FragmentPresenter} interface for root views bound directly to stages
+ * Interface for presenter associated with view bound directly to stage
  */
-public interface RootPresenter extends FragmentPresenter {
+public interface RootPresenter {
     /**
      * A method called when a {@link Stage} associated with this presenter is created in order to set up the stage
      */
     default void onStageCreated(Stage stage) {
+    }
+
+    default void onStageShowing(WindowEvent e) {
+
+    }
+
+    default void onStageHiding(WindowEvent e) {
+
     }
 }

@@ -1,6 +1,5 @@
 package me.mikethesupertramp.jfxcore.ui;
 
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import me.mikethesupertramp.jfxcore.di.Injector;
@@ -31,14 +30,15 @@ public class UserInterface implements Service {
 
     @Override
     public void postInit(ServiceManager serviceManager) {
-        Platform.runLater(() -> viewsToInit.forEach(clazz -> {
+        viewsToInit.forEach(clazz -> {
             try {
                 RootViewContainer viewInstance = clazz.newInstance();
                 createStage(viewInstance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
-        }));
+        });
+
     }
 
     /**
@@ -52,13 +52,13 @@ public class UserInterface implements Service {
         stages.put(viewContainer.getClass(), container);
 
         Scene scene = new Scene(viewContainer.getView());
-        if(rootCss != null) {
+        if (rootCss != null) {
             scene.getStylesheets().add(rootCss.toExternalForm());
         }
         stage.setScene(scene);
 
-        stage.setOnShowing(e -> viewContainer.getPresenter().onShow());
-        stage.setOnHiding(e -> viewContainer.getPresenter().onHide());
+        stage.setOnShowing(viewContainer.getPresenter()::onStageShowing);
+        stage.setOnHiding(viewContainer.getPresenter()::onStageHiding);
 
         viewContainer.getPresenter().onStageCreated(stage);
     }
@@ -98,6 +98,7 @@ public class UserInterface implements Service {
     /**
      * Sets the location of a root css file that will be added to all the stages in {@link UserInterface}
      * Usually used for defining colors and application wide style classes
+     *
      * @param rootCss URL of a css file
      */
     public void setRootCss(URL rootCss) {
@@ -135,7 +136,6 @@ public class UserInterface implements Service {
     public void shutdown(ServiceManager serviceManager) {
         stages.values().forEach(i -> i.getStage().close());
     }
-
 
 
 }
