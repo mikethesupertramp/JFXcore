@@ -3,7 +3,7 @@ package me.mikethesupertramp.jfxcore.ui.list;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
-import me.mikethesupertramp.jfxcore.ui.ViewLoadingException;
+import me.mikethesupertramp.jfxcore.ui.ViewContainer;
 import me.mikethesupertramp.jfxcore.ui.data.DataViewContainer;
 
 /**
@@ -24,10 +24,6 @@ public class ListViewUtil {
     }
 
     private static <T> ListCell<T> createCell(Class<? extends DataViewContainer<T>> view) {
-        try {
-            return new DataListCell<>(view.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new ViewLoadingException("Can not instantiate view " + view.getName(), e);
-        }
+        return new DataListCell<>(ViewContainer.instantiate(view));
     }
 }

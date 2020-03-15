@@ -30,15 +30,7 @@ public class UserInterface implements Service {
 
     @Override
     public void postInit(ServiceManager serviceManager) {
-        viewsToInit.forEach(clazz -> {
-            try {
-                RootViewContainer viewInstance = clazz.newInstance();
-                createStage(viewInstance);
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
-
+        viewsToInit.forEach(clazz -> createStage(ViewContainer.instantiate(clazz)));
     }
 
     /**

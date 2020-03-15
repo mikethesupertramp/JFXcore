@@ -64,4 +64,12 @@ public abstract class ViewContainer<T> {
         }
         return name.concat(extension);
     }
+
+    public static <T extends ViewContainer> T instantiate(Class<T> view) {
+        try {
+            return view.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ViewLoadingException("Can not instantiate view " + view.getName(), e);
+        }
+    }
 }
