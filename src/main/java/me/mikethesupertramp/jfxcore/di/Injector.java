@@ -11,15 +11,18 @@ public class Injector {
     private static List<Function<Class, Object>> injectSources = new ArrayList<>();
     public static void performInjection(Object object) {
         Class clazz = object.getClass();
-        for (Field field : clazz.getDeclaredFields()) {
-            if(field.isAnnotationPresent(Inject.class)) {
-                injectField(object, field);
+        while (clazz != null) {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Inject.class)) {
+                    injectField(object, field);
+                }
             }
-        }
-        for (Method method: clazz.getDeclaredMethods()) {
-            if(method.isAnnotationPresent(Inject.class)) {
-                injectMethod(object, method);
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Inject.class)) {
+                    injectMethod(object, method);
+                }
             }
+            clazz = clazz.getSuperclass();
         }
     }
 
