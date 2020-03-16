@@ -32,6 +32,24 @@ public abstract class ViewContainer<T> {
     }
 
 
+    private static Object instantiatePresenter(Class<?> clazz) {
+        try {
+            Object presenter = clazz.newInstance();
+            Injector.performInjection(presenter);
+            return presenter;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ViewLoadingException("Can not instantiate presenter " + clazz.getName(), e);
+        }
+    }
+
+    private String getFileName(String extension) {
+        String name = getClass().getSimpleName().toLowerCase();
+        if (name.endsWith(NAME_ENDING)) {
+            name = name.substring(0, name.lastIndexOf(NAME_ENDING));
+        }
+        return name.concat(extension);
+    }
+
     private void load() {
         String fxmlPath = getFileName(FXML_EXTENSION);
         URL fxmlResource = getClass().getResource(fxmlPath);
@@ -40,6 +58,7 @@ public abstract class ViewContainer<T> {
         }
 
         FXMLLoader loader = new FXMLLoader(fxmlResource);
+        loader.setControllerFactory(ViewContainer::instantiatePresenter);
         try {
             loader.load();
         } catch (IOException e) {
@@ -48,21 +67,11 @@ public abstract class ViewContainer<T> {
         view = loader.getRoot();
         presenter = loader.getController();
 
-        Injector.performInjection(presenter);
-
         URL cssResource = getClass().getResource(getFileName(CSS_EXTENSION));
         if(cssResource != null) {
             view.getStylesheets().add(cssResource.toExternalForm());
         }
 
-    }
-
-    private String getFileName(String extension) {
-        String name = getClass().getSimpleName().toLowerCase();
-        if(name.endsWith(NAME_ENDING)) {
-            name = name.substring(0, name.lastIndexOf(NAME_ENDING));
-        }
-        return name.concat(extension);
     }
 
     public static <T extends ViewContainer> T instantiate(Class<T> view) {
