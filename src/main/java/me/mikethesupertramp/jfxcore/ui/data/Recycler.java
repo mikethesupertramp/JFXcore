@@ -5,18 +5,21 @@ import javafx.scene.Node;
 import me.mikethesupertramp.jfxcore.ui.ViewContainer;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
- * Class used for recycling {@link DataViewContainer} objects when there is a necessity display many
- * similar data view with frequently updating data.
+ * Class used for recycling {@link DataViewContainer} objects when there is a necessity for displaying many
+ * similar items with frequently updating data.
  *
- * @param <T>
+ * @param <T> Type of data
+ * @param <K> Type of {@link DataViewContainer} view
  */
-public class Recycler<T> {
-    private final Class<? extends DataViewContainer<T>> viewClass;
-    private final Map<T, DataViewContainer<T>> activeViews = new HashMap<>();
-    private final List<DataViewContainer<T>> views = new LinkedList<>();
+public class Recycler<T, K extends DataViewContainer<? extends DataPresenter<T>>> {
+    private final Class<K> viewClass;
+    private final Map<T, K> activeViews = new HashMap<>();
+    private final List<K> views = new ArrayList<>();
     private final ObservableList<Node> container;
+    private Consumer<K> modifier;
 
     /**
      * Main constructor
@@ -24,9 +27,19 @@ public class Recycler<T> {
      * @param view      Class of the view
      * @param container list where views should be placed
      */
-    public Recycler(Class<? extends DataViewContainer<T>> view, ObservableList<Node> container) {
+    public Recycler(Class<K> view, ObservableList<Node> container) {
         this.viewClass = view;
         this.container = container;
+    }
+
+    /**
+     * Set a {@link Consumer} that will receive all the view instances created, in order to add custom initialization
+     * code like setting listeners
+     *
+     * @param modifier consumer that modifies
+     */
+    public void setModifier(Consumer<K> modifier) {
+        this.modifier = modifier;
     }
 
     /**
@@ -36,7 +49,7 @@ public class Recycler<T> {
      */
     public void addElement(T element) {
         if (!activeViews.containsKey(element)) {
-            DataViewContainer<T> viewContainer = allocateView();
+            K viewContainer = allocateView();
             viewContainer.getView().setVisible(true);
             viewContainer.getPresenter().setData(element);
             activeViews.put(element, viewContainer);
@@ -46,7 +59,7 @@ public class Recycler<T> {
     }
 
     /**
-     * Checks weather recycler contains certain element
+     * Checks if recycler contains certain element
      *
      * @param element Data element
      * @return true if recycler contains element
@@ -87,7 +100,7 @@ public class Recycler<T> {
      */
     public void removeElement(T element) {
         if (activeViews.containsKey(element)) {
-            DataViewContainer<T> viewContainer = activeViews.remove(element);
+            K viewContainer = activeViews.remove(element);
             viewContainer.getView().setVisible(false);
         }
     }
@@ -102,7 +115,7 @@ public class Recycler<T> {
         addAll(elements);
     }
 
-    private DataViewContainer<T> allocateView() {
+    private K allocateView() {
         if (activeViews.size() < views.size()) {
             return views.get(activeViews.size());
         } else {
@@ -110,8 +123,11 @@ public class Recycler<T> {
         }
     }
 
-    private DataViewContainer<T> createView() {
-        DataViewContainer<T> viewContainer = ViewContainer.instantiate(viewClass);
+    private K createView() {
+        K viewContainer = ViewContainer.instantiate(viewClass);
+        if (modifier != null) {
+            modifier.accept(viewContainer);
+        }
         views.add(viewContainer);
         container.add(viewContainer.getView());
         return viewContainer;
